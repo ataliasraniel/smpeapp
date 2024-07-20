@@ -7,3 +7,5 @@ enum ScreenState { loading, idle, error }
 enum NotificationType { success, error, alert }
 
 enum DurationTypes { minutes, hours }
+
+enum Status { DESATIVATED, NORMAL, DAMAGED }
