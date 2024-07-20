@@ -1,0 +1,27 @@
+name: smpeapp
+description: "Sistema de Monitoramento e Prevenção de Enchentes'"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+dependencies:
+  animate_do: ^3.3.4
+  bot_toast: ^4.1.3
+  dio: ^5.5.0+1
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.0.10+1
+  get: ^4.6.6
+  google_fonts: ^6.2.1
+  intl: ^0.19.0
+  skeletonizer: ^1.4.1+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
