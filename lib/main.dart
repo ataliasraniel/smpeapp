@@ -16,6 +16,7 @@ class MainApp extends StatelessWidget {
     return GetMaterialApp(
       theme: ThemeData(fontFamily: kDefaultFontFamily),
       home: StartScreen(),
+      debugShowCheckedModeBanner: false,
       title: 'SMPE - Sistema de Monitoramento e Prevenção de Enchentes',
     );
   }

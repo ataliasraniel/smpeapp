@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../constants/app_enums.dart';
@@ -58,5 +59,18 @@ class Utils {
       }
     }
     return idade.toString();
+  }
+
+  static Color getStatusColor(Status status) {
+    switch (status) {
+      case Status.DESATIVATED:
+        return Colors.red;
+      case Status.DAMAGED:
+        return Colors.yellow;
+      case Status.NORMAL:
+        return Colors.green;
+      default:
+        return Colors.black;
+    }
   }
 }
