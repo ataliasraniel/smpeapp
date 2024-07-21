@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741607630929",
+    "project_id": "smpe-dbe14",
+    "storage_bucket": "smpe-dbe14.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741607630929:android:fe62bbfc23d84439cd3070",
+        "android_client_info": {
+          "package_name": "com.arbashstudios.smpe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWaCPECvrML72H89scKdLm3igf5t6PngM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

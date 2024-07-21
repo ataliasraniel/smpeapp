@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../constants/app_constants.dart';
 
@@ -88,6 +89,7 @@ class ApiManager {
       );
       return response.data;
     } on DioException catch (e) {
+      print(e);
       log(e.response.toString());
       return Future.error(e.response?.data['detail'] ?? 'Erro ao realizar requisição');
     } catch (e) {

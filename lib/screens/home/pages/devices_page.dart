@@ -61,79 +61,82 @@ class _DevicesPageState extends State<DevicesPage> {
                   children: <Widget>[
                     Text('Câmeras', style: kBody3),
                     const SizedBox(height: kSmallSize),
-                    Expanded(
-                        child: Column(
-                      children: <Widget>[
-                        Expanded(
-                          child: GridView.builder(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: kSmallSize,
-                              mainAxisSpacing: kSmallSize,
-                              childAspectRatio: 0.6,
+                    if (_homeScreenController.cameras == null)
+                      Center(child: CircularProgressIndicator())
+                    else
+                      Expanded(
+                          child: Column(
+                        children: <Widget>[
+                          Expanded(
+                            child: GridView.builder(
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: kSmallSize,
+                                mainAxisSpacing: kSmallSize,
+                                childAspectRatio: 0.6,
+                              ),
+                              itemCount: _homeScreenController.cameras!.length,
+                              itemBuilder: (context, index) {
+                                final camera = _homeScreenController.cameras![index];
+                                return SlideInUp(
+                                  duration: Duration(milliseconds: 200 * index),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(kSmallSize),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(kSmallSize),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 10,
+                                          offset: Offset(0, 5),
+                                        )
+                                      ],
+                                    ),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 3,
+                                          child: Stack(
+                                            children: [
+                                              Container(
+                                                color: Colors.grey,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text('Última foto Hoje, às 12:40', style: kCaption1),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: kSmallSize),
+                                        Expanded(
+                                            child: SizedBox(
+                                          width: double.maxFinite,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text('${camera.name} - ${camera.address}', style: kBody3),
+                                              const SizedBox(height: kSmallSize),
+                                              // Text('Status: ${camera.status.name}', style: kCaption2),
+                                              Text(
+                                                'Observação: ${camera.observation}',
+                                                style: kCaption2,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
+                                        ))
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
-                            itemCount: _homeScreenController.cameras.length,
-                            itemBuilder: (context, index) {
-                              final camera = _homeScreenController.cameras[index];
-                              return SlideInUp(
-                                duration: Duration(milliseconds: 200 * index),
-                                child: Container(
-                                  padding: const EdgeInsets.all(kSmallSize),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(kSmallSize),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 10,
-                                        offset: Offset(0, 5),
-                                      )
-                                    ],
-                                  ),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Expanded(
-                                        flex: 3,
-                                        child: Stack(
-                                          children: [
-                                            Container(
-                                              color: Colors.grey,
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Text('Última foto Hoje, às 12:40', style: kCaption1),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: kSmallSize),
-                                      Expanded(
-                                          child: SizedBox(
-                                        width: double.maxFinite,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text('${camera.name} - ${camera.address}', style: kBody3),
-                                            const SizedBox(height: kSmallSize),
-                                            Text('Status: ${camera.status.name}', style: kCaption2),
-                                            Text(
-                                              'Observação: ${camera.observation}',
-                                              style: kCaption2,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                      ))
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
                           ),
-                        ),
-                      ],
-                    ))
+                        ],
+                      ))
                   ],
                 ),
                 Column(

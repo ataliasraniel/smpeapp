@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:smpeapp/core/constants/app_number_constants.dart';
 import 'package:smpeapp/core/constants/style_constants.dart';
+import 'package:smpeapp/core/managers/api_manager.dart';
+import 'package:smpeapp/core/models/report_model.dart';
 import 'package:smpeapp/core/utils/date_format_utils.dart';
 import 'package:smpeapp/screens/home/home_screen_controller.dart';
 import 'package:smpeapp/screens/home/pages/devices_page.dart';
@@ -16,47 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, dynamic>> _reports = [
-    {
-      'title': 'Relatório Guardião',
-      'dateTime': DateFormatUtils.formatStringDateTimeToBrDateHourAndMinute('2022-01-01 12:00:00'),
-      'updated': DateFormatUtils.formatStringDateTimeToBrDateHourAndMinute('2022-01-01 12:00:00'),
-      'status': 'Concluído',
-      'statusColor': kSuccessColor,
-      'riskStatus': 'Baixo',
-      'observations':
-          //gere uma observação com 240 caracteres levando em consideraçao a previsã do tempo, risco e status
-          'O dia está ensolarado, sem previsão de chuva, com temperatura de 25°C e umidade relativa do ar de 50%. O vento está fraco, com velocidade de 10km/h e índice UV de 5. A pressão atmosférica está em 1013hPa. O risco de enchente é baixo e o status do relatório é concluído.',
-      'forecast': {
-        'rain': 0.0,
-        'temperature': 25.0,
-        'humidity': 50.0,
-        'wind': 10.0,
-        'uv': 5.0,
-        'pressure': 1013.0,
-      }
-    },
-    //crie mais reports com dados aleatórios
-    {
-      'title': 'Relatório Guardião',
-      'dateTime': DateFormatUtils.formatStringDateTimeToBrDateHourAndMinute('2022-01-01 14:00:00'),
-      'updated': DateFormatUtils.formatStringDateTimeToBrDateHourAndMinute('2022-01-01 16:00:00'),
-      'status': 'Concluído',
-      'statusColor': kSuccessColor,
-      'riskStatus': 'Alto',
-      'observations':
-          //gere uma observação com 240 caracteres levando em consideraçao a previsã do tempo, risco e status
-          'O dia está ensolarado, sem previsão de chuva, com temperatura de 25°C e umidade relativa do ar de 50%. O vento está fraco, com velocidade de 10km/h e índice UV de 5. A pressão atmosférica está em 1013hPa. O risco de enchente é alto e o status do relatório é concluído.',
-      'forecast': {
-        'rain': 0.0,
-        'temperature': 25.0,
-        'humidity': 50.0,
-        'wind': 10.0,
-        'uv': 5.0,
-        'pressure': 1013.0,
-      }
-    }
-  ];
   @override
   Widget build(BuildContext context) {
     return GetBuilder(
@@ -88,20 +49,69 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(kDefaultPadding),
                 child: PageView(
                   controller: controller.pageController,
-                  children: [HomePage(reports: _reports), DevicesPage()],
+                  children: [HomePage(), DevicesPage()],
                 ),
               ));
         });
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({
-    super.key,
-    required List<Map<String, dynamic>> reports,
-  }) : _reports = reports;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
-  final List<Map<String, dynamic>> _reports;
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final ApiManager _apiManager = ApiManager();
+
+  Future<List<ReportModel>> _getReports() async {
+    final List<ReportModel> reports = [];
+    try {
+      final response = await _apiManager.getData('/report');
+      for (final report in response['data']) {
+        reports.add(ReportModel.fromJson(report));
+      }
+      return reports;
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  Color _getColorByAlertLevel(String alertLevel) {
+    //   MINIMUM
+    // MEDIUM
+    // HIGH
+    // EXTREME
+    switch (alertLevel) {
+      case 'MINIMUM':
+        return Colors.green;
+      case 'MEDIUM':
+        return Colors.yellow;
+      case 'HIGH':
+        return Colors.orange;
+      case 'EXTREME':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getLevelTranslated(String alertLevel) {
+    switch (alertLevel) {
+      case 'MINIMUM':
+        return 'Mínimo';
+      case 'MEDIUM':
+        return 'Médio';
+      case 'HIGH':
+        return 'Alto';
+      case 'EXTREME':
+        return 'Extremo';
+      default:
+        return 'Desconhecido';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,131 +132,127 @@ class HomePage extends StatelessWidget {
         ),
         //crie uma lista com os dados acima com um icone para cada status
         Expanded(
-          child: ListView.builder(
-            itemCount: _reports.length,
-            itemBuilder: (context, index) {
-              return FadeInUp(
-                duration: Duration(milliseconds: 200 * index),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: kMediumSize),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      left: BorderSide(
-                        color: _reports[index]['statusColor'],
-                        width: 5,
-                      ),
-                    ),
-                    borderRadius: BorderRadius.circular(kSmallSize),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(kMediumSize),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _reports[index]['title'],
-                            style: kBody2,
-                          ),
-                          Text(
-                            _reports[index]['dateTime'],
-                            style: kCaption2,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: kSmallSize,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Atualizado em: ${_reports[index]['updated']}',
-                            style: kCaption1,
-                          ),
-                          Text(
-                            'Status: ${_reports[index]['status']}',
-                            style: kCaption1.copyWith(color: _reports[index]['statusColor']),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: kSmallSize,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Risco: ${_reports[index]['riskStatus']}',
-                            style: kCaption1,
-                          ),
-                          Text(
-                            'Previsão:',
-                            style: kCaption1,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: kSmallSize,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                'Chuva: ${_reports[index]['forecast']['rain']}mm',
-                                style: kCaption1,
+          child: FutureBuilder(
+              future: _getReports(),
+              builder: (context, snapshot) {
+                final data = snapshot.data as List<ReportModel>;
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                //if has error
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Erro ao carregar os dados'),
+                  );
+                } else {
+                  return ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return FadeInUp(
+                        duration: Duration(milliseconds: 200 * index),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: kMediumSize),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border(
+                              left: BorderSide(
+                                color: _getColorByAlertLevel(data[index].alertLevel!),
+                                width: 5,
                               ),
-                              Text(
-                                'Temperatura: ${_reports[index]['forecast']['temperature']}°C',
-                                style: kCaption1,
-                              ),
-                              Text(
-                                'Umidade: ${_reports[index]['forecast']['humidity']}%',
-                                style: kCaption1,
+                            ),
+                            borderRadius: BorderRadius.circular(kSmallSize),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
                               ),
                             ],
                           ),
-                          Column(
-                            children: [
-                              Text(
-                                'Vento: ${_reports[index]['forecast']['wind']}km/h',
-                                style: kCaption1,
+                          padding: const EdgeInsets.all(kMediumSize),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    'Relatório ${data[index].id}'.toUpperCase().substring(0, 16),
+                                    style: kBody2.copyWith(
+                                      color: _getColorByAlertLevel(data[index].alertLevel!),
+                                    ),
+                                  ),
+                                  // Text(
+                                  //   DateFormatUtils.getTodayDate(data[index].createdAt!),
+                                  //   style: kBody2,
+                                  // ),
+                                ],
+                              ),
+                              //ALER LEVEL
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: _getColorByAlertLevel(data[index].alertLevel!),
+                                  borderRadius: BorderRadius.circular(kSmallSize),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: kMediumSize,
+                                  vertical: kSmallSize,
+                                ),
+                                margin: const EdgeInsets.only(top: kSmallSize),
+                                child: Text(
+                                  'ALERTA:${_getLevelTranslated(data[index].alertLevel!).toUpperCase()}',
+                                  style: kBody3.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: kSmallSize,
                               ),
                               Text(
-                                'UV: ${_reports[index]['forecast']['uv']}',
-                                style: kCaption1,
+                                data[index].observationText!,
+                                style: kCaption2,
                               ),
-                              Text(
-                                'Pressão: ${_reports[index]['forecast']['pressure']}hPa',
-                                style: kCaption1,
+                              SizedBox(
+                                height: kSmallSize,
                               ),
+                              // Row(
+                              //   children: <Widget>[
+                              //     for (final img in data[index].imgs!)
+                              //       Padding(
+                              //         padding: const EdgeInsets.only(right: kSmallSize),
+                              //         child: Image.network(
+                              //           img,
+                              //           width: 100,
+                              //         ),
+                              //       ),
+                              //   ],
+                              // ),
+                              SizedBox(
+                                  height: 200,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: data[index].imgs!.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(right: kSmallSize),
+                                        child: Image.network(
+                                          data[index].imgs![index],
+                                          width: 100,
+                                        ),
+                                      );
+                                    },
+                                  ))
                             ],
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: kSmallSize,
-                      ),
-                      Text(
-                        _reports[index]['observations'],
-                        style: kCaption2,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              }),
         ),
       ],
     );

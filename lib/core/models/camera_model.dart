@@ -1,116 +1,91 @@
-// enum Status{
-//   DESATIVATED
-//   NORMAL
-//   DAMAGED
-// }
-// ////
-
-// model Camera {
-//   id String @id @default(uuid())
-//   name String
-//   lat Float
-//   long Float
-//   active Boolean @default(true)
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   status Status @default(NORMAL)
-//   observation String?
-//   imgsData CameraImage[]
-// }
-
-import 'package:smpeapp/core/constants/app_enums.dart';
-
 class CameraModel {
-  final String id;
-  final String name;
-  final double lat;
-  final String address;
-  final double long;
-  final bool active;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final Status status;
-  final String? observation;
-  final List<CameraImageModel> imgsData;
+  String? id;
+  String? name;
+  double? lat;
+  double? long;
+  bool? active;
+  String? createdAt;
+  String? updatedAt;
+  String? status;
+  Null? observation;
+  String? address;
+  List<ImgsData>? imgsData;
 
-  CameraModel({
-    required this.id,
-    required this.name,
-    required this.lat,
-    required this.long,
-    required this.active,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.status,
-    this.observation,
-    required this.imgsData,
-    required this.address,
-  });
+  CameraModel(
+      {this.id,
+      this.name,
+      this.lat,
+      this.long,
+      this.active,
+      this.createdAt,
+      this.updatedAt,
+      this.status,
+      this.observation,
+      this.address,
+      this.imgsData});
 
-  CameraModel fromJson(Map<String, dynamic> json) {
-    return CameraModel(
-      id: json['id'],
-      name: json['name'],
-      lat: json['lat'],
-      long: json['long'],
-      active: json['active'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      status: json['status'],
-      observation: json['observation'],
-      imgsData: json['imgsData'],
-      address: json['address'],
-    );
+  CameraModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    lat = json['lat'];
+    long = json['long'];
+    active = json['active'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    status = json['status'];
+    observation = json['observation'];
+    address = json['address'];
+    if (json['imgsData'] != null) {
+      imgsData = <ImgsData>[];
+      json['imgsData'].forEach((v) {
+        imgsData!.add(new ImgsData.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'lat': lat,
-      'long': long,
-      'active': active,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      'status': status,
-      'observation': observation,
-      'imgsData': imgsData,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['lat'] = this.lat;
+    data['long'] = this.long;
+    data['active'] = this.active;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['status'] = this.status;
+    data['observation'] = this.observation;
+    data['address'] = this.address;
+    if (this.imgsData != null) {
+      data['imgsData'] = this.imgsData!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
-class CameraImageModel {
-  final String id;
-  final String cameraId;
-  final String imgPath;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+class ImgsData {
+  String? id;
+  String? imageUrl;
+  String? createdAt;
+  String? updatedAt;
+  String? cameraId;
 
-  CameraImageModel({
-    required this.id,
-    required this.cameraId,
-    required this.imgPath,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+  ImgsData({this.id, this.imageUrl, this.createdAt, this.updatedAt, this.cameraId});
 
-  CameraImageModel fromJson(Map<String, dynamic> json) {
-    return CameraImageModel(
-      id: json['id'],
-      cameraId: json['cameraId'],
-      imgPath: json['imgPath'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-    );
+  ImgsData.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    imageUrl = json['imageUrl'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    cameraId = json['cameraId'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'cameraId': cameraId,
-      'imgPath': imgPath,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-    };
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['imageUrl'] = this.imageUrl;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['cameraId'] = this.cameraId;
+    return data;
   }
 }

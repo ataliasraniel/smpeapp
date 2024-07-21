@@ -61,13 +61,13 @@ class Utils {
     return idade.toString();
   }
 
-  static Color getStatusColor(Status status) {
+  static Color getStatusColor(String status) {
     switch (status) {
-      case Status.DESATIVATED:
+      case 'DESATIVATED':
         return Colors.red;
-      case Status.DAMAGED:
+      case 'DAMAGED':
         return Colors.yellow;
-      case Status.NORMAL:
+      case 'NORMAL':
         return Colors.green;
       default:
         return Colors.black;

@@ -1,4 +1,4 @@
-package com.example.smpeapp
+package com.arbashstudios.smpe
 
 import io.flutter.embedding.android.FlutterActivity
 

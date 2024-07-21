@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:smpeapp/core/models/camera_model.dart';
+
+import 'add_new_photo_screen.dart';
 
 class CameraViewScreen extends StatefulWidget {
   const CameraViewScreen({super.key, required this.camera});
@@ -14,7 +17,7 @@ class _CameraViewScreenState extends State<CameraViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.camera.name),
+          title: Text(widget.camera.name!),
           actions: [
             IconButton(
               icon: Icon(Icons.refresh),
@@ -26,7 +29,11 @@ class _CameraViewScreenState extends State<CameraViewScreen> {
             IconButton(
               icon: Icon(Icons.add_a_photo),
               onPressed: () {
-                // _controller.insertPhoto();
+                Get.to(
+                    () => AddNewPhotoScreen(
+                          cameraId: widget.camera.id!,
+                        ),
+                    transition: Transition.rightToLeftWithFade);
               },
             ),
           ],
@@ -36,21 +43,21 @@ class _CameraViewScreenState extends State<CameraViewScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Endereço: ' + widget.camera.address),
-              Text('Status: ' + widget.camera.status.name),
+              Text('Endereço: ' + widget.camera.address!),
+              // Text('Status: ' + widget.camera.status.name!),
               Divider(),
               Text('Últimas fotos'),
-              widget.camera.imgsData.isEmpty
+              widget.camera.imgsData!.isEmpty
                   ? Center(child: Text('Nenhuma foto encontrada'))
                   : Expanded(
                       child: ListView.builder(
-                        itemCount: widget.camera.imgsData.length,
+                        itemCount: widget.camera.imgsData!.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final photo = widget.camera.imgsData[index];
+                          final photo = widget.camera.imgsData![index];
                           return ListTile(
-                            title: Text(photo.id),
+                            title: Text(photo.id!),
                             subtitle: Text(photo.createdAt.toString()),
-                            leading: Image.network(photo.imgPath),
+                            leading: Image.network(photo.imageUrl!),
                           );
                         },
                       ),
