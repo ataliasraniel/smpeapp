@@ -6,11 +6,12 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smpeapp/core/constants/style_constants.dart';
 import 'package:smpeapp/core/managers/api_manager.dart';
+import 'package:smpeapp/core/models/camera_model.dart';
 
 import '../../../../../components/buttons/primary_button.dart';
 
 class AddNewPhotoScreen extends StatefulWidget {
-  const AddNewPhotoScreen({super.key, required this.cameraId});
+  const AddNewPhotoScreen({super.key, required this.cameraId, required CameraModel camera});
   final String cameraId;
   @override
   State<AddNewPhotoScreen> createState() => _AddNewPhotoScreenState();
@@ -52,12 +53,14 @@ class _AddNewPhotoScreenState extends State<AddNewPhotoScreen> {
       await storageRef.child(filePath).putFile(File(_imageFile!.path));
       final String downloadUrl = await storageRef.child(filePath).getDownloadURL();
       print(downloadUrl);
-      await _apiManager.postData('/data/images/${widget.cameraId}', data: {
+      final response = await _apiManager.postData('/data/images/${widget.cameraId}', data: {
         'imageUrl': downloadUrl,
       });
-      Get.back();
+      Get.back(result: {
+        'id': DateTime.now().millisecondsSinceEpoch,
+        'imageUrl': downloadUrl,
+      });
       Get.snackbar('Sucesso!', 'Foto adicionada com sucesso', backgroundColor: Colors.green);
-      setIsLoading(false);
     } catch (e) {
       print(e);
       setIsLoading(false);

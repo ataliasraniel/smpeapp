@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:smpeapp/components/buttons/primary_button.dart';
 import 'package:smpeapp/core/constants/app_number_constants.dart';
 import 'package:smpeapp/core/constants/style_constants.dart';
+import 'package:smpeapp/screens/admin/screens/home/new_report_screen.dart';
 
 import '../cameras/cameras_screen.dart';
+import '../sensors/sensors_page.dart';
 
 class AdminHome extends StatefulWidget {
   const AdminHome({super.key});
@@ -80,7 +83,12 @@ class _AdminHomeState extends State<AdminHome> {
                         //Sensores
                         ListTile(
                             leading: Icon(Icons.sensors),
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SensorsScreen()),
+                              );
+                            },
                             title: Text(
                               'Sensores',
                             ),
@@ -98,7 +106,11 @@ class _AdminHomeState extends State<AdminHome> {
                         SizedBox(
                           height: kSmallSize,
                         ),
-                        PrimaryButton(text: 'Iniciar Relatório Manual', onPressed: () {})
+                        PrimaryButton(
+                            text: 'Iniciar Relatório Manual',
+                            onPressed: () {
+                              Get.to(() => NewReportScreen());
+                            })
                       ],
                     ),
                     Column(

@@ -7,7 +7,7 @@ class CameraModel {
   String? createdAt;
   String? updatedAt;
   String? status;
-  Null? observation;
+  String? observation;
   String? address;
   List<ImgsData>? imgsData;
 

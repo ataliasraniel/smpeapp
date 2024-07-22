@@ -21,92 +21,80 @@
 import 'package:smpeapp/core/constants/app_enums.dart';
 
 class LevelSensorModel {
-  final String id;
-  final String name;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final List<LevelDataModel> levelsData;
-  final bool active;
-  final Status status;
-  final double lat;
-  final double long;
+  String? id;
+  String? name;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  List<LevelDataModel>? levelsData;
+  bool? active;
+  String? status;
+  double? lat;
+  double? long;
 
   LevelSensorModel({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.levelsData,
-    required this.active,
-    required this.status,
-    required this.lat,
-    required this.long,
+    this.id,
+    this.name,
+    this.createdAt,
+    this.updatedAt,
+    this.levelsData,
+    this.active,
+    this.status,
+    this.lat,
+    this.long,
   });
 
-  LevelSensorModel fromJson(Map<String, dynamic> json) {
-    return LevelSensorModel(
-      id: json['id'],
-      name: json['name'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      levelsData: json['levelsData'],
-      active: json['active'],
-      status: json['status'],
-      lat: json['lat'],
-      long: json['long'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      'levelsData': levelsData,
-      'active': active,
-      'status': status,
-      'lat': lat,
-      'long': long,
-    };
+  LevelSensorModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    createdAt = DateTime.parse(json['createdAt']);
+    updatedAt = DateTime.parse(json['updatedAt']);
+    if (json['levelsData'] != null) {
+      levelsData = <LevelDataModel>[];
+      json['levelsData'].forEach((v) {
+        levelsData!.add(LevelDataModel.fromJson(v));
+      });
+    }
+    active = json['active'];
+    status = json['status'];
+    lat = json['lat'];
+    long = json['long'];
   }
 }
 
 class LevelDataModel {
-  final String id;
-  final DateTime createdAt;
-  final String sensorId;
-  final String? observation;
-  final LevelSensorModel sensor;
-  final double level;
+  String? id;
+  DateTime? createdAt;
+  String? sensorId;
+  String? observation;
+  LevelSensorModel? sensor;
+  double? level;
 
   LevelDataModel({
-    required this.id,
-    required this.createdAt,
-    required this.sensorId,
+    this.id,
+    this.createdAt,
+    this.sensorId,
     this.observation,
-    required this.sensor,
-    required this.level,
+    this.sensor,
+    this.level,
   });
 
-  LevelDataModel fromJson(Map<String, dynamic> json) {
-    return LevelDataModel(
-      id: json['id'],
-      createdAt: json['createdAt'],
-      sensorId: json['sensorId'],
-      observation: json['observation'],
-      level: json['level'],
-      sensor: json['sensor'],
-    );
+  LevelDataModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    createdAt = DateTime.parse(json['createdAt']);
+    sensorId = json['sensorId'];
+    observation = json['observation'];
+    sensor = json['sensor'];
+    level = json['level'].toDouble();
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'createdAt': createdAt,
-      'sensorId': sensorId,
-      'observation': observation,
-      'sensor': sensor,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['createdAt'] = createdAt!.toIso8601String();
+    data['sensorId'] = sensorId;
+    data['observation'] = observation;
+    data['sensor'] = sensor;
+    data['level'] = level;
+    return data;
   }
 }

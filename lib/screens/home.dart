@@ -2,6 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smpeapp/core/constants/app_number_constants.dart';
 import 'package:smpeapp/core/constants/style_constants.dart';
 import 'package:smpeapp/core/managers/api_manager.dart';
@@ -43,13 +44,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               appBar: AppBar(
-                title: Text('SMPE'),
+                title: const Text('SMPE'),
               ),
               body: Padding(
                 padding: const EdgeInsets.all(kDefaultPadding),
                 child: PageView(
                   controller: controller.pageController,
-                  children: [HomePage(), DevicesPage()],
+                  children: [const HomePage(), const DevicesPage()],
                 ),
               ));
         });
@@ -88,11 +89,11 @@ class _HomePageState extends State<HomePage> {
       case 'MINIMUM':
         return Colors.green;
       case 'MEDIUM':
-        return Colors.yellow;
-      case 'HIGH':
         return Colors.orange;
-      case 'EXTREME':
+      case 'HIGH':
         return Colors.red;
+      case 'EXTREME':
+        return Colors.deepOrange;
       default:
         return Colors.grey;
     }
@@ -123,11 +124,11 @@ class _HomePageState extends State<HomePage> {
           'Olá, bom dia. Hoje é ${DateFormatUtils.getTodayDate()}',
           style: kBody2,
         ),
-        SizedBox(
+        const SizedBox(
           height: kMediumSize,
         ),
-        Text('Veja os últimos relatórios gerados pelo nosso Guardião'),
-        SizedBox(
+        const Text('Veja os últimos relatórios gerados pelo nosso Guardião'),
+        const SizedBox(
           height: kMediumSize,
         ),
         //crie uma lista com os dados acima com um icone para cada status
@@ -135,18 +136,35 @@ class _HomePageState extends State<HomePage> {
           child: FutureBuilder(
               future: _getReports(),
               builder: (context, snapshot) {
-                final data = snapshot.data as List<ReportModel>;
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
-                    child: CircularProgressIndicator(),
-                  );
+                      child: Column(
+                    children: <Widget>[
+                      Skeletonizer(
+                          enabled: true,
+                          child: Column(
+                              children: List.generate(
+                                  6,
+                                  (index) => Container(
+                                        color: Colors.red,
+                                        width: double.maxFinite,
+                                        margin: const EdgeInsets.only(bottom: 10),
+                                        height: 100,
+                                      ))))
+                    ],
+                  ));
                 }
                 //if has error
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text('Erro ao carregar os dados'),
+                    child: Text('Erro ao carregar os dados${snapshot.error}'),
+                  );
+                } else if (snapshot.data == null) {
+                  return const Center(
+                    child: Text('Nenhum dado encontrado'),
                   );
                 } else {
+                  final data = snapshot.data as List<ReportModel>;
                   return ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {
@@ -208,14 +226,14 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: kSmallSize,
                               ),
                               Text(
                                 data[index].observationText!,
                                 style: kCaption2,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: kSmallSize,
                               ),
                               // Row(
@@ -230,21 +248,21 @@ class _HomePageState extends State<HomePage> {
                               //       ),
                               //   ],
                               // ),
-                              SizedBox(
-                                  height: 200,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: data[index].imgs!.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(right: kSmallSize),
-                                        child: Image.network(
-                                          data[index].imgs![index],
-                                          width: 100,
-                                        ),
-                                      );
-                                    },
-                                  ))
+                              // SizedBox(
+                              //     height: 200,
+                              //     child: ListView.builder(
+                              //       scrollDirection: Axis.horizontal,
+                              //       itemCount: data[index].imgs!.length - 1,
+                              //       itemBuilder: (context, index) {
+                              //         return Padding(
+                              //           padding: const EdgeInsets.only(right: kSmallSize),
+                              //           child: Image.network(
+                              //             data[index].imgs![index],
+                              //             width: 100,
+                              //           ),
+                              //         );
+                              //       },
+                              //     ))
                             ],
                           ),
                         ),

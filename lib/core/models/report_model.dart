@@ -19,15 +19,17 @@ class ReportModel {
     updatedAt = json['updatedAt'];
     imgs = json['imgs'].cast<String>();
     if (json['levelDatas'] != null) {
-      levelDatas = <Null>[];
+      levelDatas = <int>[];
       json['levelDatas'].forEach((v) {
-        levelDatas!.add([]);
+        levelDatas!.add(
+          v,
+        );
       });
     }
     if (json['precipitationDatas'] != null) {
-      precipitationDatas = <Null>[];
+      precipitationDatas = <int>[];
       json['precipitationDatas'].forEach((v) {
-        precipitationDatas!.add([]);
+        precipitationDatas!.add(v);
       });
     }
   }

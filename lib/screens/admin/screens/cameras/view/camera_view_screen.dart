@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smpeapp/core/models/camera_model.dart';
+import 'package:smpeapp/core/utils/date_format_utils.dart';
 
 import 'add_new_photo_screen.dart';
 
@@ -13,27 +14,50 @@ class CameraViewScreen extends StatefulWidget {
 }
 
 class _CameraViewScreenState extends State<CameraViewScreen> {
+  final List<Map<String, dynamic>> imagesUrls = [];
+
+  @override
+  void initState() {
+    super.initState();
+    widget.camera.imgsData!.forEach((element) {
+      imagesUrls.add(
+        {
+          'id': element.id,
+          'imageUrl': element.imageUrl,
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.camera.name!),
           actions: [
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () {
-                // _controller.getCameras();
-              },
-            ),
             //insert a photo into the camera
             IconButton(
-              icon: Icon(Icons.add_a_photo),
-              onPressed: () {
-                Get.to(
-                    () => AddNewPhotoScreen(
-                          cameraId: widget.camera.id!,
-                        ),
-                    transition: Transition.rightToLeftWithFade);
+              icon: const Icon(Icons.add_a_photo),
+              onPressed: () async {
+                final routeResponse = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddNewPhotoScreen(
+                      cameraId: widget.camera.id!,
+                      camera: widget.camera,
+                    ),
+                  ),
+                );
+                if (routeResponse != null) {
+                  setState(() {
+                    imagesUrls.add(
+                      {
+                        'id': routeResponse['id'],
+                        'imageUrl': routeResponse['imageUrl'],
+                      },
+                    );
+                  });
+                }
               },
             ),
           ],
@@ -43,25 +67,43 @@ class _CameraViewScreenState extends State<CameraViewScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Endereço: ' + widget.camera.address!),
+              Text('Endereço: ${widget.camera.address!}'),
               // Text('Status: ' + widget.camera.status.name!),
-              Divider(),
-              Text('Últimas fotos'),
+              const Divider(),
+              const Text('Últimas fotos'),
               widget.camera.imgsData!.isEmpty
-                  ? Center(child: Text('Nenhuma foto encontrada'))
+                  ? const Center(child: Text('Nenhuma foto encontrada'))
                   : Expanded(
-                      child: ListView.builder(
-                        itemCount: widget.camera.imgsData!.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final photo = widget.camera.imgsData![index];
-                          return ListTile(
-                            title: Text(photo.id!),
-                            subtitle: Text(photo.createdAt.toString()),
-                            leading: Image.network(photo.imageUrl!),
-                          );
-                        },
-                      ),
-                    )
+                      child: GridView.builder(
+                          shrinkWrap: true,
+                          itemCount: widget.camera.imgsData!.length,
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                          ),
+                          itemBuilder: (context, index) {
+                            final photo = widget.camera.imgsData![index];
+                            return Container(
+                              margin: const EdgeInsets.all(8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Image.network(
+                                    photo.imageUrl!,
+                                    height: 140,
+                                    width: double.maxFinite,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    DateFormatUtils.formatStringDateTimeToBrDateHourAndMinute(photo.createdAt!),
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }))
             ],
           ),
         ));

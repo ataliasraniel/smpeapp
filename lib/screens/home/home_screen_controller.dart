@@ -20,7 +20,7 @@ class HomeScreenController extends GetxController {
   final List<LevelSensorModel> _levelSensors = List<LevelSensorModel>.empty().obs;
   List<LevelSensorModel> get levelSensors => _levelSensors;
 
-  RxBool _isLoadingCameras = true.obs;
+  final RxBool _isLoadingCameras = true.obs;
   bool get isLoadingCameras => _isLoadingCameras.value;
 
   final List<PrecipitationSensorModel> _preciptations = List<PrecipitationSensorModel>.empty().obs;
@@ -58,5 +58,33 @@ class HomeScreenController extends GetxController {
   void changePage(int index) {
     pageController.jumpToPage(index);
     changeSelectedIndex(index);
+  }
+
+  Future<List<CameraModel>> fetchCameras() async {
+    try {
+      final response = await _apiManager.getData('/sensors/camera');
+      final List<CameraModel> cameras = [];
+      response['data'].forEach((camera) {
+        cameras.add(CameraModel.fromJson(camera));
+      });
+      return cameras;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<List<LevelSensorModel>> fetchLevelSensors() async {
+    try {
+      final response = await _apiManager.getData('/sensors/level');
+      final List<LevelSensorModel> levelSensors = [];
+      response['data'].forEach((levelSensor) {
+        levelSensors.add(LevelSensorModel.fromJson(levelSensor));
+      });
+      return levelSensors;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 }
